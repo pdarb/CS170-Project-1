@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 
-maxTimeout = 10
+maxTimeout = 30
 
 ## From StackOverflow 
 @dataclass(order=True)
@@ -26,6 +26,8 @@ def uniform_cost_algorithm(game):
         startGame = q.get()
         print('depth:', startGame.g)
 
+
+        # Prints gameState in matrix format
         print('Current State:')
         for i in startGame.gameState:
             for j in i:
@@ -33,6 +35,7 @@ def uniform_cost_algorithm(game):
             print(' ')
     
 
+        # Checks if curr_state = goal_state
         if startGame.goal_test():
             print('Solved using Uniform Cost!')
             print('Final Solution:', startGame.gameState)
@@ -43,7 +46,7 @@ def uniform_cost_algorithm(game):
             return 
 
 
-        #checks all possible direction moves
+        # Checks all possible direction moves
         try:
             newMove = startGame.direction_result(startGame.startState, MoveDirection.Up)
             if newMove:
@@ -102,6 +105,7 @@ def misplaced_tile_algorithm(game):
 
     startTime = time.time()
 
+    #Uses PrioritzedItem class to order matrices from lowest heuristic (high priority) to hishest
     q = PriorityQueue()
     q.put(PrioritizedItem(game.misplaced_tile_heuristic(), game))
 
@@ -111,6 +115,7 @@ def misplaced_tile_algorithm(game):
         startGame = q.get().item  #pops first node and stores it in startGame var.
         print('depth:', startGame.g)
 
+        # Prints gameState in matrix format
         print('Current State:')
         for i in startGame.gameState:
             for j in i:
@@ -118,16 +123,17 @@ def misplaced_tile_algorithm(game):
             print(' ')
     
 
-        if startGame.goal_test(): #checks if curr_state = goal_state
+        # Checks if curr_state = goal_state
+        if startGame.goal_test():
             print('Solved using Misplaced Tile!!')
             return
 
-        #checks all possible direction moves
+        # Checks all possible direction moves
         try:
             newMove = startGame.direction_result(startGame.startState, MoveDirection.Up)
             if newMove:
                 newMove = Puzzle(newMove)
-                #sprint('up', newMove.startState)
+                #print('up', newMove.startState)
                 newMove.h = newMove.misplaced_tile_heuristic()
                 newMove.g = 1 + startGame.g
                 newMove.f = newMove.g + newMove.h
@@ -196,15 +202,18 @@ def manhattan_distance_algorithm(game):
     
     startTime = time.time()
 
+    #Uses PrioritzedItem class to order matrices from lowest heuristic (high priority) to hishest
     q = PriorityQueue()
-    q.put(PrioritizedItem(game.manhattan_dist_heuristic(), game))
+    q.put(PrioritizedItem(game.manhattan_dist_heuristic(), game)) 
 
     while not q.empty():
 
-
-        startGame = q.get().item  #pops first node and stores it in startGame var.
+        # Pops first node and stores it in startGame var.
+        startGame = q.get().item  
         print('depth:', startGame.g)
         
+
+        # Prints gameState in matrix format
         print('Current State:')
         for i in startGame.gameState:
             for j in i:
@@ -212,11 +221,12 @@ def manhattan_distance_algorithm(game):
             print(' ')
     
 
-        if startGame.goal_test(): #checks if curr_state = goal_state
+        # Checks if curr_state = goal_state
+        if startGame.goal_test(): 
             print('Solved using Manhattan Distance!!')
             return
 
-        #checks all possible direction moves
+        # Checks all possible direction moves
         try:
             newMove = startGame.direction_result(startGame.startState, MoveDirection.Up)
             if newMove:
@@ -291,6 +301,8 @@ if __name__== '__main__':
 
     matrix = []
 
+    print('\nWelcome to my 8-puzzle solver! Enter a solvable 8-Puzzle.\n')
+
     input_string = input('Enter first row: ')
     user_list = input_string.split()
 
@@ -324,9 +336,12 @@ if __name__== '__main__':
         print(' ')
 
 
+
+
     algChoice = int(input('Choose: \n(1) Uniform Cost \n(2) Misplaced Tiles \n(3) Manhattan Distance\n'))
 
     game = Puzzle(matrix)
+
 
     if algChoice == 1:
         uniform_cost_algorithm(game)

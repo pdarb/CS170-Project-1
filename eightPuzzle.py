@@ -17,9 +17,10 @@ class Puzzle:
         self.startState = start
         self.gameState = start
 
+        #self.goalState = goal
         self.goalState = [[1, 2, 3], [4, 5, 6], [7, 8, 0]]
         self.g = 0 # depth
-        self.h = 0 # # of misplaced ones
+        self.h = 0 # num. of misplaced tiles
         self.f = 0 # g + h
         self.zero_index = []
 
@@ -56,7 +57,7 @@ class Puzzle:
                     dist += (abs(i - goalPos[0]) + abs(j - goalPos[1]))
         return dist
 
-
+    # Searches for index of 0
     def find_zero_index(self):
         for i in range(len(self.startState)):
             for j in range(len(self.startState[i])):
@@ -64,13 +65,15 @@ class Puzzle:
                     self.zero_index = [i, j]
         
 
-
+    # Swaps position of 0 with the position of swapPos
     def direction_result(self, state, move):
         
         state = self.copy_matrix(state)
         
-        self.find_zero_index() # Finds position of 0 before moving
+        # Finds position of 0 before moving
+        self.find_zero_index() 
 
+        # Sums the 0 index with the coordinates for a specific move direction
         swapPos = [sum(x) for x in zip(self.zero_index, move.value)]
 
         if swapPos[0] >= 0 and swapPos[0] <= 2 and swapPos[1] >=0 and swapPos[1] <=2:
@@ -82,7 +85,8 @@ class Puzzle:
             return ''
 
 
-    def copy_matrix(self, state): #makes a copy of current matrix
+    # Makes a copy of current matrix
+    def copy_matrix(self, state): 
         return deepcopy(state)
         
 
@@ -90,6 +94,7 @@ class Puzzle:
         print('Matrix: ', self.gameState)
 
 
+    # Checks if we have reached our solution
     def goal_test(self):
         isEqual = np.array_equal(self.gameState, self.goalState)
         return isEqual
