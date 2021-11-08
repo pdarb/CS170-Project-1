@@ -11,15 +11,16 @@ class MoveDirection(Enum):
     Left = (0, -1)
 
 
+
 class Puzzle:
     def __init__ (self, start):
         self.startState = start
         self.gameState = start
 
         self.goalState = [[1, 2, 3], [4, 5, 6], [7, 8, 0]]
-        self.g = 0
-        #self.h = 0
-        self.f = 0
+        self.g = 0 # depth
+        self.h = 0 # # of misplaced ones
+        self.f = 0 # g + h
         self.zero_index = []
 
 
@@ -30,7 +31,6 @@ class Puzzle:
             for j in range(len(self.gameState[i])):
                 if self.startState[i][j] != self.goalState[i][j] and self.gameState[i][j] != 0:
                     count += 1
-        print(count)
         return count
     
 
@@ -53,30 +53,23 @@ class Puzzle:
             for j in range(len(self.gameState[i])):
                 if self.gameState[i][j] != self.goalState[i][j] and self.gameState[i][j] != 0:
                     goalPos = thisdict[str(self.gameState[i][j])]
-                    print(goalPos)
                     dist += (abs(i - goalPos[0]) + abs(j - goalPos[1]))
-        print(dist)
         return dist
 
 
     def find_zero_index(self):
-        for i in range(len(self.gameState)):
-            for j in range(len(self.gameState[i])):
-                if self.gameState[i][j] == 0:
+        for i in range(len(self.startState)):
+            for j in range(len(self.startState[i])):
+                if self.startState[i][j] == 0:
                     self.zero_index = [i, j]
-                    print(self.zero_index)
-        return self.zero_index
         
 
 
     def direction_result(self, state, move):
         
         state = self.copy_matrix(state)
-
-        # Add conditions to check edge cases, check for valid moves
         
         self.find_zero_index() # Finds position of 0 before moving
-        #if (self.zero_index[0] < 0)
 
         swapPos = [sum(x) for x in zip(self.zero_index, move.value)]
 
@@ -89,16 +82,8 @@ class Puzzle:
             return ''
 
 
-        # a = self.gameState[self.zero_index[0]][self.zero_index[1]]
-        # b = self.gameState[val[0]][val[1]]
-
-        #a, b = b, a
-        # self.gameState[self.zero_index[0]][self.zero_index[1]], self.gameState[val[0]][val[1]] = self.gameState[val[0]][val[1]], self.gameState[self.zero_index[0]][self.zero_index[1]]
-        # return self.gameState
-
-
-    def copy_matrix(self): #makes a copy of current matrix
-        return deepcopy(self.gameState)
+    def copy_matrix(self, state): #makes a copy of current matrix
+        return deepcopy(state)
         
 
     def print_initial_state(self):
@@ -106,11 +91,6 @@ class Puzzle:
 
 
     def goal_test(self):
-        #print('Reached goal test')
-        isEqual = np.array_equal(self.gameState, self.goalState) 
-        #print('Is equal:', isEqual)
+        isEqual = np.array_equal(self.gameState, self.goalState)
         return isEqual
-
-        
-
 

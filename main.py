@@ -1,90 +1,139 @@
+import time
 from eightPuzzle import Puzzle, MoveDirection
 from queue import Queue, PriorityQueue
+from dataclasses import dataclass, field
+from typing import Any
+
+
+maxTimeout = 10
+
+## From StackOverflow 
+@dataclass(order=True)
+class PrioritizedItem:
+    priority: int
+    item: Any=field(compare=False)
 
 
 def uniform_cost_algorithm(game):
 
-    print('Entered Uniform cost alg')
+    startTime = time.time()
 
-    depth = 0
     q = Queue()
     q.put(game)
-   
+
     while not q.empty():
+        
+        startGame = q.get()
+        print('depth:', startGame.g)
 
-        #depth += 1
+        print('Current State:')
+        for i in startGame.gameState:
+            for j in i:
+                print(j, end=' ')
+            print(' ')
+    
 
-        startGame = q.get()  #pops first node and stores it in startGame var.
-
-        if startGame.goal_test(): #checks if curr_state = goal_state
+        if startGame.goal_test():
             print('Solved using Uniform Cost!')
+            print('Final Solution:', startGame.gameState)
+
+            endTime = time.time()
+            print('Completion Time:', endTime - startTime)
+
             return 
+
 
         #checks all possible direction moves
         try:
-            newGame = Puzzle(startGame)
-            newMove = newGame.direction_result(newGame.gameState, MoveDirection.Up)
-            q.put(newMove)
+            newMove = startGame.direction_result(startGame.startState, MoveDirection.Up)
+            if newMove:
+                newMove = Puzzle(newMove)
+                #print('up', newMove.startState)
+                newMove.g = 1 + startGame.g
+                q.put(newMove)
 
         except:
             pass
 
         try:
-            print('checking down')
-            newGame = Puzzle(startGame)
-            newMove = newGame.direction_result(newGame.gameState, MoveDirection.Down)
-            q.put(newMove)
+            newMove = startGame.direction_result(startGame.startState, MoveDirection.Down)
+            if newMove:
+                newMove = Puzzle(newMove)
+                #print('down', newMove.startState)
+                newMove.g = 1 + startGame.g
+                q.put(newMove)
 
         except:
             pass
 
         try:
-            print('checking left')
-            newGame = Puzzle(startGame)
-            newMove = newGame.direction_result(newGame.gameState, MoveDirection.Left)
-            q.put(newMove)
+            newMove = startGame.direction_result(startGame.startState, MoveDirection.Left)
+            if newMove:
+                newMove = Puzzle(newMove)
+                #print('left', newMove.startState)
+                newMove.g = 1 + startGame.g
+                q.put(newMove)
 
         except:
             pass
 
         try:
-            print('checking right')
-            newGame = Puzzle(startGame)
-            newMove = newGame.direction_result(newGame.gameState, MoveDirection.Right)
-            q.put(newMove)
+            newMove = startGame.direction_result(startGame.startState, MoveDirection.Right)
+            if newMove:
+                newMove = Puzzle(newMove)
+                #print('right', newMove.startState)
+                newMove.g = 1 + startGame.g
+                q.put(newMove)
 
         except:
             pass
- 
+
+
+        currentTime = time.time()
+        # print(currentTime - startTime)
+
+        if (currentTime - startTime) > maxTimeout:
+            print('Code has timed out in ', maxTimeout, ' secs')
+            quit()
+
 
 
 def misplaced_tile_algorithm(game):
 
-    depth = 0
+    startTime = time.time()
+
     q = PriorityQueue()
-    q.put(game)
+    q.put(PrioritizedItem(game.misplaced_tile_heuristic(), game))
 
     while not q.empty():
 
-        depth += 1
 
-        startGame = q.get()  #pops first node and stores it in startGame var.
+        startGame = q.get().item  #pops first node and stores it in startGame var.
+        print('depth:', startGame.g)
+
+        print('Current State:')
+        for i in startGame.gameState:
+            for j in i:
+                print(j, end=' ')
+            print(' ')
+    
 
         if startGame.goal_test(): #checks if curr_state = goal_state
             print('Solved using Misplaced Tile!!')
             return
 
-        #check all possible direction moves
+        #checks all possible direction moves
         try:
             newMove = startGame.direction_result(startGame.startState, MoveDirection.Up)
             if newMove:
                 newMove = Puzzle(newMove)
-                print('up', newMove.startState)
+                #sprint('up', newMove.startState)
                 newMove.h = newMove.misplaced_tile_heuristic()
-                newMove.f = depth + newMove.h
-                print('h', newMove.h)
-                print('f', newMove.f)
-                q.put(newMove)
+                newMove.g = 1 + startGame.g
+                newMove.f = newMove.g + newMove.h
+                # print('h', newMove.h)
+                # print('f', newMove.f)
+                q.put(PrioritizedItem(newMove.f, newMove))
 
         except:
             pass
@@ -93,12 +142,13 @@ def misplaced_tile_algorithm(game):
             newMove = startGame.direction_result(startGame.startState, MoveDirection.Down)
             if newMove:
                 newMove = Puzzle(newMove)
-                print('down', newMove.startState)
+                #print('down', newMove.startState)
                 newMove.h = newMove.misplaced_tile_heuristic()
-                newMove.f = depth + newMove.h
-                print('h', newMove.h)
-                print('f', newMove.f)
-                q.put(newMove)
+                newMove.g = 1 + startGame.g
+                newMove.f = newMove.g + newMove.h
+                # print('h', newMove.h)
+                # print('f', newMove.f)
+                q.put(PrioritizedItem(newMove.f, newMove))
 
         except:
             pass
@@ -107,12 +157,13 @@ def misplaced_tile_algorithm(game):
             newMove = startGame.direction_result(startGame.startState, MoveDirection.Left)
             if newMove:
                 newMove = Puzzle(newMove)
-                print('left', newMove.startState)
+                #print('left', newMove.startState)
                 newMove.h = newMove.misplaced_tile_heuristic()
-                newMove.f = depth + newMove.h
-                print('h', newMove.h)
-                print('f', newMove.f)
-                q.put(newMove)
+                newMove.g = 1 + startGame.g
+                newMove.f = newMove.g + newMove.h
+                # print('h', newMove.h)
+                # print('f', newMove.f)
+                q.put(PrioritizedItem(newMove.f, newMove))
 
         except:
             pass
@@ -121,60 +172,62 @@ def misplaced_tile_algorithm(game):
             newMove = startGame.direction_result(startGame.startState, MoveDirection.Right)
             if newMove:
                 newMove = Puzzle(newMove)
-                print('right', newMove.startState)
+                #print('right', newMove.startState)
                 newMove.h = newMove.misplaced_tile_heuristic()
-                newMove.f = depth + newMove.h
-                print('h', newMove.h)
-                print('f', newMove.f)
-                q.put(newMove)
+                newMove.g = 1 + startGame.g
+                newMove.f = newMove.g + newMove.h
+                # print('h', newMove.h)
+                # print('f', newMove.f)
+                q.put(PrioritizedItem(newMove.f, newMove))
+
         except:
             pass
 
 
+        currentTime = time.time()
+        # print(currentTime - startTime)
 
-        bestMove=''
-        leastScore=100000000
-    
-        for move in q.queue:
-            if move.f < leastScore:
-                bestMove = move
-                leastScore = move.f
-        
-        print('BestMove =>>', bestMove.gameState)
-        q = PriorityQueue()
-        q.put(bestMove)
-
-    
-
+        if (currentTime - startTime) > maxTimeout:
+            print('Code has timed out in ', maxTimeout, ' secs')
+            quit()
 
 
 def manhattan_distance_algorithm(game):
     
-    depth = 0
+    startTime = time.time()
+
     q = PriorityQueue()
-    q.put(game)
-    print(q.qsize())
+    q.put(PrioritizedItem(game.manhattan_dist_heuristic(), game))
 
     while not q.empty():
 
-        depth += 1
 
-        startGame = q.get()  #pops first node and stores it in startGame var.
+        startGame = q.get().item  #pops first node and stores it in startGame var.
+        print('depth:', startGame.g)
+        
+        print('Current State:')
+        for i in startGame.gameState:
+            for j in i:
+                print(j, end=' ')
+            print(' ')
+    
 
         if startGame.goal_test(): #checks if curr_state = goal_state
             print('Solved using Manhattan Distance!!')
             return
 
+        #checks all possible direction moves
         try:
             newMove = startGame.direction_result(startGame.startState, MoveDirection.Up)
             if newMove:
                 newMove = Puzzle(newMove)
-                print('up', newMove.startState)
+                #print('up', newMove.startState)
                 newMove.h = newMove.manhattan_dist_heuristic()
-                newMove.f = depth + newMove.h
-                print('h', newMove.h)
-                print('f', newMove.f)
-                q.put(newMove)
+                newMove.g = 1 + startGame.g
+                newMove.f = newMove.g + newMove.h
+                # print('h', newMove.h)
+                # print('f', newMove.f)
+                q.put(PrioritizedItem(newMove.f, newMove))
 
         except:
             pass
@@ -183,13 +236,13 @@ def manhattan_distance_algorithm(game):
             newMove = startGame.direction_result(startGame.startState, MoveDirection.Down)
             if newMove:
                 newMove = Puzzle(newMove)
-                print('down', newMove.startState)
+                #print('down', newMove.startState)
                 newMove.h = newMove.manhattan_dist_heuristic()
-                newMove.f = depth + newMove.h
-                print('h', newMove.h)
-                print('f', newMove.f)
-                q.put(newMove)
-
+                newMove.g = 1 + startGame.g
+                newMove.f = newMove.g + newMove.h
+                # print('h', newMove.h)
+                # print('f', newMove.f)
+                q.put(PrioritizedItem(newMove.f, newMove))
 
         except:
             pass
@@ -198,12 +251,13 @@ def manhattan_distance_algorithm(game):
             newMove = startGame.direction_result(startGame.startState, MoveDirection.Left)
             if newMove:
                 newMove = Puzzle(newMove)
-                print('left', newMove.startState)
+                #print('left', newMove.startState)
                 newMove.h = newMove.manhattan_dist_heuristic()
-                newMove.f = depth + newMove.h
-                print('h', newMove.h)
-                print('f', newMove.f)
-                q.put(newMove)
+                newMove.g = 1 + startGame.g
+                newMove.f = newMove.g + newMove.h
+                # print('h', newMove.h)
+                # print('f', newMove.f)
+                q.put(PrioritizedItem(newMove.f, newMove))
 
         except:
             pass
@@ -212,32 +266,24 @@ def manhattan_distance_algorithm(game):
             newMove = startGame.direction_result(startGame.startState, MoveDirection.Right)
             if newMove:
                 newMove = Puzzle(newMove)
-                print('right', newMove.startState)
+                #print('right', newMove.startState)
                 newMove.h = newMove.manhattan_dist_heuristic()
-                newMove.f = depth + newMove.h
-                print('h', newMove.h)
-                print('f', newMove.f)
-                q.put(newMove)
+                newMove.g = 1 + startGame.g
+                newMove.f = newMove.g + newMove.h
+                # print('h', newMove.h)
+                # print('f', newMove.f)
+                q.put(PrioritizedItem(newMove.f, newMove))
 
         except:
             pass
 
 
-        bestMove=''
-        leastScore=100000000
-    
-        for move in q.queue:
-            if move.f < leastScore:
-                bestMove = move
-                leastScore = move.f
-        
-        print('BestMove =>>', bestMove.gameState)
-        q = PriorityQueue()
-        q.put(bestMove)
+        currentTime = time.time()
+        # print(currentTime - startTime)
 
-
-
-
+        if (currentTime - startTime) > maxTimeout:
+            print('Code has timed out in ', maxTimeout, ' secs')
+            quit()
 
 
 if __name__== '__main__':
@@ -277,15 +323,10 @@ if __name__== '__main__':
             print(j, end=' ')
         print(' ')
 
-    for i in range(len(user_list)):
-        if user_list[i] == 0:
-            print(int(user_list[i]))
-    #else
 
     algChoice = int(input('Choose: \n(1) Uniform Cost \n(2) Misplaced Tiles \n(3) Manhattan Distance\n'))
 
     game = Puzzle(matrix)
-    #d = MoveDirection()
 
     if algChoice == 1:
         uniform_cost_algorithm(game)
@@ -295,24 +336,3 @@ if __name__== '__main__':
 
     if algChoice == 3:
         manhattan_distance_algorithm(game)
-
-
-
-
-
-    #game.find_zero_index()
-
-    #game.direction_result(matrix, MoveDirection.Up)    
-
-    #game.misplaced_tile_heuristic()
-    #game.manhattan_dist_heuristic()
-
-    # game.print_initial_state()
-
-    
-
-
-
-    #depth: 3
-    #game = Puzzle([['1', '2', '3'], ['0', '4', '6'], ['7', '5', '8']])
-
