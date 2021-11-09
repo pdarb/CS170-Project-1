@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 
-maxTimeout = 30
+maxTimeout = 900
 
 ## From StackOverflow 
 @dataclass(order=True)
