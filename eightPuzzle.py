@@ -22,6 +22,7 @@ class Puzzle:
         self.g = 0 # depth
         self.h = 0 # num. of misplaced tiles
         self.f = 0 # g + h
+        self.nodeExpand = 0
         self.zero_index = []
 
 

@@ -20,11 +20,18 @@ def uniform_cost_algorithm(game):
 
     q = Queue()
     q.put(game)
+    max_queue = 1
+    nodeExpand = 1
 
     while not q.empty():
         
+        queue_size = max(max_queue, q.qsize())
+
         startGame = q.get()
         print('depth:', startGame.g)
+
+        nodeExpand += 1
+
 
 
         # Prints gameState in matrix format
@@ -33,15 +40,25 @@ def uniform_cost_algorithm(game):
             for j in i:
                 print(j, end=' ')
             print(' ')
-    
+
+        
+        print('g(n)', startGame.g)
 
         # Checks if curr_state = goal_state
         if startGame.goal_test():
             print('Solved using Uniform Cost!')
-            print('Final Solution:', startGame.gameState)
+            print('Final Solution:')
+            for i in startGame.gameState:
+                for j in i:
+                    print(j, end=' ')
+                print(' ')
 
+            print('Reached solution at a depth of ', startGame.g)
             endTime = time.time()
-            print('Completion Time:', endTime - startTime)
+            print('Completion Time:', round(endTime - startTime, 3))
+            print('# of nodes expanded:', nodeExpand)
+            print('Max Queue Size:', queue_size)
+            
 
             return 
 
@@ -108,12 +125,20 @@ def misplaced_tile_algorithm(game):
     #Uses PrioritzedItem class to order matrices from lowest heuristic (high priority) to hishest
     q = PriorityQueue()
     q.put(PrioritizedItem(game.misplaced_tile_heuristic(), game))
+    game.h = game.misplaced_tile_heuristic()
+    game.f = 0 + game.h
+
+    max_queue = 1
+    nodeExpand = 1
 
     while not q.empty():
 
+        queue_size = max(max_queue, q.qsize())
 
         startGame = q.get().item  #pops first node and stores it in startGame var.
         print('depth:', startGame.g)
+
+        nodeExpand += 1
 
         # Prints gameState in matrix format
         print('Current State:')
@@ -121,11 +146,28 @@ def misplaced_tile_algorithm(game):
             for j in i:
                 print(j, end=' ')
             print(' ')
+
+        print('h(n)', startGame.h)
+        print('f(n)', startGame.f)
     
 
         # Checks if curr_state = goal_state
         if startGame.goal_test():
             print('Solved using Misplaced Tile!!')
+
+            print('Final Solution:')
+            for i in startGame.gameState:
+                for j in i:
+                    print(j, end=' ')
+                print(' ')
+
+            print('Reached solution at a depth of ', startGame.g)
+            endTime = time.time()
+            print('Completion Time:', round(endTime - startTime, 3))
+            print('# of nodes expanded:', nodeExpand)
+            print('Max Queue Size:', queue_size)
+            
+
             return
 
         # Checks all possible direction moves
@@ -137,8 +179,8 @@ def misplaced_tile_algorithm(game):
                 newMove.h = newMove.misplaced_tile_heuristic()
                 newMove.g = 1 + startGame.g
                 newMove.f = newMove.g + newMove.h
-                # print('h', newMove.h)
-                # print('f', newMove.f)
+                # print('h(n)', newMove.h)
+                # print('f(n)', newMove.f)
                 q.put(PrioritizedItem(newMove.f, newMove))
 
         except:
@@ -152,8 +194,8 @@ def misplaced_tile_algorithm(game):
                 newMove.h = newMove.misplaced_tile_heuristic()
                 newMove.g = 1 + startGame.g
                 newMove.f = newMove.g + newMove.h
-                # print('h', newMove.h)
-                # print('f', newMove.f)
+                # print('h(n)', newMove.h)
+                # print('f(n)', newMove.f)
                 q.put(PrioritizedItem(newMove.f, newMove))
 
         except:
@@ -167,8 +209,8 @@ def misplaced_tile_algorithm(game):
                 newMove.h = newMove.misplaced_tile_heuristic()
                 newMove.g = 1 + startGame.g
                 newMove.f = newMove.g + newMove.h
-                # print('h', newMove.h)
-                # print('f', newMove.f)
+                # print('h(n)', newMove.h)
+                # print('f(n)', newMove.f)
                 q.put(PrioritizedItem(newMove.f, newMove))
 
         except:
@@ -182,8 +224,8 @@ def misplaced_tile_algorithm(game):
                 newMove.h = newMove.misplaced_tile_heuristic()
                 newMove.g = 1 + startGame.g
                 newMove.f = newMove.g + newMove.h
-                # print('h', newMove.h)
-                # print('f', newMove.f)
+                # print('h(n)', newMove.h)
+                # print('f(n)', newMove.f)
                 q.put(PrioritizedItem(newMove.f, newMove))
 
         except:
@@ -205,12 +247,21 @@ def manhattan_distance_algorithm(game):
     #Uses PrioritzedItem class to order matrices from lowest heuristic (high priority) to hishest
     q = PriorityQueue()
     q.put(PrioritizedItem(game.manhattan_dist_heuristic(), game)) 
+    game.h = game.manhattan_dist_heuristic()
+    game.f = 0 + game.h
+
+    max_queue = 1
+    nodeExpand = 1
 
     while not q.empty():
+
+        queue_size = max(max_queue, q.qsize())
 
         # Pops first node and stores it in startGame var.
         startGame = q.get().item  
         print('depth:', startGame.g)
+
+        nodeExpand += 1
         
 
         # Prints gameState in matrix format
@@ -219,11 +270,27 @@ def manhattan_distance_algorithm(game):
             for j in i:
                 print(j, end=' ')
             print(' ')
+
+        print('h(n)', startGame.h)
+        print('f(n)', startGame.f)
     
 
         # Checks if curr_state = goal_state
         if startGame.goal_test(): 
             print('Solved using Manhattan Distance!!')
+
+            print('Final Solution:')
+            for i in startGame.gameState:
+                for j in i:
+                    print(j, end=' ')
+                print(' ')
+
+            print('Reached solution at a depth of ', startGame.g)
+            endTime = time.time()
+            print('Completion Time:', round(endTime - startTime, 3))
+            print('# of nodes expanded:', nodeExpand)
+            print('Max Queue Size:', queue_size)
+
             return
 
         # Checks all possible direction moves
@@ -235,8 +302,8 @@ def manhattan_distance_algorithm(game):
                 newMove.h = newMove.manhattan_dist_heuristic()
                 newMove.g = 1 + startGame.g
                 newMove.f = newMove.g + newMove.h
-                # print('h', newMove.h)
-                # print('f', newMove.f)
+                # print('h(n)', newMove.h)
+                # print('f(n)', newMove.f)
                 q.put(PrioritizedItem(newMove.f, newMove))
 
         except:
@@ -250,8 +317,8 @@ def manhattan_distance_algorithm(game):
                 newMove.h = newMove.manhattan_dist_heuristic()
                 newMove.g = 1 + startGame.g
                 newMove.f = newMove.g + newMove.h
-                # print('h', newMove.h)
-                # print('f', newMove.f)
+                # print('h(n)', newMove.h)
+                # print('f(n)', newMove.f)
                 q.put(PrioritizedItem(newMove.f, newMove))
 
         except:
@@ -265,8 +332,8 @@ def manhattan_distance_algorithm(game):
                 newMove.h = newMove.manhattan_dist_heuristic()
                 newMove.g = 1 + startGame.g
                 newMove.f = newMove.g + newMove.h
-                # print('h', newMove.h)
-                # print('f', newMove.f)
+                # print('h(n)', newMove.h)
+                # print('f(n)', newMove.f)
                 q.put(PrioritizedItem(newMove.f, newMove))
 
         except:
@@ -280,8 +347,8 @@ def manhattan_distance_algorithm(game):
                 newMove.h = newMove.manhattan_dist_heuristic()
                 newMove.g = 1 + startGame.g
                 newMove.f = newMove.g + newMove.h
-                # print('h', newMove.h)
-                # print('f', newMove.f)
+                # print('h(n)', newMove.h)
+                # print('f(n)', newMove.f)
                 q.put(PrioritizedItem(newMove.f, newMove))
 
         except:
@@ -302,6 +369,7 @@ if __name__== '__main__':
     matrix = []
 
     print('\nWelcome to my 8-puzzle solver! Enter a solvable 8-Puzzle.\n')
+    print('Enter numbers for each row, separating each number using a space. Press ENTER when done\n')
 
     input_string = input('Enter first row: ')
     user_list = input_string.split()
